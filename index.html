@@ -232,14 +232,14 @@ document.addEventListener('click', e => {
   if (t.dataset.onglet) { onglet = t.dataset.onglet; noteOuverte = null; rendre(); }
   else if (t.dataset.mois) { moisVu.setMonth(moisVu.getMonth() + +t.dataset.mois); rendre(); }
   else if (t.dataset.jour) { jourSel = t.dataset.jour; const d = new Date(jourSel + 'T12:00'); if (d.getMonth() !== moisVu.getMonth()) { moisVu = new Date(d); moisVu.setDate(1); } rendre(); }
-  else if (t.dataset.suppr) { const sid = t.dataset.suppr; if (confirm('Supprimer cet événement ?')) modifier('agenda', d => { const i = d.findIndex(x => x.id === sid); if (i >= 0) d.splice(i, 1); }); }
+  else if (t.dataset.suppr) { const sid = t.dataset.suppr; modifier('agenda', d => { const i = d.findIndex(x => x.id === sid); if (i >= 0) d.splice(i, 1); }); }
   else if (t.dataset.note) { noteOuverte = t.dataset.note; rendre(); }
   else if (t.id === 'retour') { clearTimeout(minuteurNote); if (enAttente) enAttente(); noteOuverte = null; document.activeElement.blur(); rendre(); }
-  else if (t.id === 'noteSuppr') { const nid = noteOuverte; if (confirm('Supprimer cette note ?')) { noteOuverte = null; modifier('notes', d => { d.listes = d.listes.filter(x => x.id !== nid); }); } }
+  else if (t.id === 'noteSuppr') { const nid = noteOuverte; { noteOuverte = null; modifier('notes', d => { d.listes = d.listes.filter(x => x.id !== nid); }); } }
   else if (t.dataset.tfiltre) { filtreT = t.dataset.tfiltre; rendre(); }
   else if (t.dataset.tfait) { const tid = t.dataset.tfait; modifier('taches', d => { const x = d.find(y => y.id === tid); if (x) { x.fait = !x.fait; x.faitLe = x.fait ? Date.now() : null; } }); }
-  else if (t.dataset.tdel) { const tid = t.dataset.tdel; if (confirm('Supprimer cette tâche ?')) modifier('taches', d => { const i = d.findIndex(y => y.id === tid); if (i >= 0) d.splice(i, 1); }); }
-  else if (t.id === 'effacerFaites') { if (confirm('Effacer toutes les tâches terminées ?')) modifier('taches', d => { for (let i = d.length - 1; i >= 0; i--) if (d[i].fait) d.splice(i, 1); }); }
+  else if (t.dataset.tdel) { const tid = t.dataset.tdel; modifier('taches', d => { const i = d.findIndex(y => y.id === tid); if (i >= 0) d.splice(i, 1); }); }
+  else if (t.id === 'effacerFaites') { modifier('taches', d => { for (let i = d.length - 1; i >= 0; i--) if (d[i].fait) d.splice(i, 1); }); }
   else if (t.dataset.couleur) { document.querySelectorAll('[data-couleur]').forEach(b => b.setAttribute('aria-pressed', b === t)); enregistrerNote('couleur', t.dataset.couleur); }
 });
 document.addEventListener('submit', e => {
