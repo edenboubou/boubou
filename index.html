@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0e0d">
+<meta name="robots" content="noindex, nofollow">
+<title>BOUBOU</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icone.svg">
+<style>
+:root{--bg:#060808;--card:rgba(18,22,21,.92);--soft:rgba(32,38,36,.85);--txt:#eceeea;--mut:#9ea69f;--bd:rgba(190,210,205,.15);--acc:#6fb0ba;--acc2:#3b6670;--ko:#f2647a;--ok:#3ed39b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:radial-gradient(120% 60% at 60% 100%,#26302d 0%,#0d1110 55%,#050606 100%) fixed;color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px}
+body{padding:calc(env(safe-area-inset-top) + 12px) 14px calc(env(safe-area-inset-bottom) + 90px)}
+h1{font-size:26px;letter-spacing:6px;margin:4px 0 14px;font-weight:800;display:flex;align-items:center;gap:10px}
+h1 small{font-size:12px;letter-spacing:1px;color:var(--mut);font-weight:600;margin-left:auto}
+.onglets{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;padding:10px 14px calc(env(safe-area-inset-bottom) + 10px);background:rgba(6,8,8,.94);border-top:1px solid var(--bd);z-index:10}
+.onglets button{flex:1;padding:12px;border-radius:14px;border:1px solid var(--bd);background:var(--soft);color:var(--mut);font-size:15px;font-weight:700;letter-spacing:1px}
+.onglets button[aria-pressed=true]{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border-color:transparent}
+.carte{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:14px;margin-bottom:12px;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.mois{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.mois b{flex:1;text-align:center;font-size:17px;text-transform:capitalize}
+.ico{width:40px;height:40px;border-radius:12px;border:1px solid var(--bd);background:var(--soft);color:var(--txt);font-size:18px;display:grid;place-items:center}
+.grille{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.grille .js{font-size:11px;color:var(--mut);font-weight:700;padding:4px 0}
+.grille button{aspect-ratio:1;border:0;border-radius:12px;background:transparent;color:var(--txt);font-size:15px;position:relative}
+.grille button.hors{color:#4c5450}
+.grille button.auj{border:1.5px solid var(--acc)}
+.grille button.sel{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;font-weight:700}
+.grille button i{position:absolute;bottom:5px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:var(--acc)}
+.grille button.sel i{background:#fff}
+.titre{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin:2px 0 10px}
+.ev{display:flex;align-items:center;gap:10px;padding:10px 4px;border-top:1px solid var(--bd)}
+.ev:first-of-type{border-top:0}
+.ev .h{min-width:52px;font-weight:800;color:var(--acc);font-variant-numeric:tabular-nums}
+.ev .t{flex:1;overflow-wrap:anywhere}
+.ev .d{font-size:12px;color:var(--mut)}
+.suppr{border:0;background:none;color:var(--mut);font-size:20px;width:36px;height:36px;border-radius:10px}
+.vide{color:var(--mut);padding:8px 2px}
+form.ajout{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+input,textarea,select{font:inherit;color:var(--txt);background:rgba(6,8,8,.85);border:1px solid var(--bd);border-radius:12px;padding:12px;outline:none;min-width:0}
+input:focus,textarea:focus{border-color:var(--acc)}
+form.ajout input[type=text]{flex:1 1 180px}
+form.ajout input[type=time]{width:110px}
+.btn{border:0;border-radius:12px;padding:12px 18px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;font-weight:800;font-size:15px}
+.liste{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;background:var(--soft);border:1px solid var(--bd);margin-bottom:8px}
+.liste .pt{width:12px;height:12px;border-radius:50%;flex:none}
+.liste .n{flex:1;font-weight:700}
+.liste .ap{font-size:12.5px;color:var(--mut);display:block;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60vw}
+.editeur textarea{width:100%;min-height:52vh;resize:vertical;line-height:1.5}
+.editeur .haut{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.editeur .haut input{flex:1;font-weight:800}
+.etat{font-size:12px;color:var(--mut);margin-top:6px;min-height:16px}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 86px);transform:translateX(-50%);background:#1b2220;border:1px solid var(--bd);padding:10px 16px;border-radius:12px;font-size:14px;z-index:20;max-width:90vw}
+.charge{color:var(--mut);text-align:center;padding:40px 0}
+.couleurs{display:flex;gap:8px}
+.couleurs button{width:30px;height:30px;border-radius:50%;border:2px solid transparent}
+.couleurs button[aria-pressed=true]{border-color:#fff}
+.verrou{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:24px;background:radial-gradient(120% 60% at 60% 100%,#26302d 0%,#0d1110 55%,#050606 100%)}
+.verrou form{width:100%;max-width:340px;display:grid;gap:12px;text-align:center}
+.verrou h2{margin:0 0 6px;letter-spacing:6px;font-size:28px}
+.verrou p{margin:0;color:var(--mut);font-size:14px}
+.verrou input{text-align:center;font-size:20px;letter-spacing:2px}
+.verrou .err{color:var(--ko);min-height:18px}
+</style>
+</head>
+<body>
+<div class="verrou" id="verrou"><form id="formMdp" autocomplete="on">
+  <h2>BOUBOU</h2><p id="mdpAide">Chargement…</p>
+  <input type="password" id="mdp1" placeholder="Mot de passe" autocomplete="current-password" required>
+  <input type="password" id="mdp2" placeholder="Confirmer le mot de passe" autocomplete="new-password" hidden>
+  <button class="btn" id="mdpBtn">Entrer</button><div class="err" id="mdpErr"></div>
+</form></div>
+<h1>BOUBOU <small id="maj"></small></h1>
+<main id="vue"><div class="charge">Chargement…</div></main>
+<nav class="onglets">
+  <button type="button" data-onglet="agenda" aria-pressed="true">AGENDA</button>
+  <button type="button" data-onglet="notes" aria-pressed="false">NOTES</button>
+</nav>
+<script>
+/* ---------- Accès aux deux fichiers Drive (via le script BOUBOU) ---------- */
+/* Service de données (Google Apps Script, compte Eden). La clé secrète est dans le lien (#k=...) : jamais dans ce fichier. */
+const API = 'https://script.google.com/macros/s/AKfycbydby3MRnvBFwoPHKTlEhMbX-cSb4Ba2zKT8T-Rqy8R44d7EbsYOgVqV8GryvjtxBHr3Q/exec';
+let K = '';
+try { K = new URLSearchParams(location.hash.slice(1)).get('k') || localStorage.getItem('boubouK') || ''; if (K) localStorage.setItem('boubouK', K); } catch { K = new URLSearchParams(location.hash.slice(1)).get('k') || ''; }
+let MDP = '';
+async function api(a, extra = {}) {
+  const r = await fetch(API, { method: 'POST', body: JSON.stringify({ k: K, m: MDP, a, ...extra }) });   // text/plain : pas de pré-requête CORS
+  const j = await r.json();
+  if (j.erreur) throw new Error(j.erreur);
+  return j;
+}
+const appelBrut = (fn, k, m, ...a) => fn === 'etat' ? api('etat') : fn === 'definirMdp' ? api('definir', { m }) : api('connexion', { m });
+const appel = (fn, cle, json, modif) => api(fn, { cle, json, modif });
+const D = { agenda: null, notes: null }, MODIF = { agenda: 0, notes: 0 };
+let onglet = 'agenda';
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const id = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const $ = s => document.querySelector(s);
+function toast(t) { const e = document.createElement('div'); e.className = 'toast'; e.textContent = t; document.body.appendChild(e); setTimeout(() => e.remove(), 2600); }
+function heure() { $('#maj').textContent = 'à jour ' + new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }); }
+
+async function charger(cle) {
+  const r = await appel('lire', cle);
+  D[cle] = JSON.parse(r.json || 'null'); MODIF[cle] = r.modif;
+  if (cle === 'agenda' && !Array.isArray(D.agenda)) D.agenda = [];
+  if (cle === 'notes' && (!D.notes || !Array.isArray(D.notes.listes))) D.notes = { listes: [], init: true };
+}
+async function toutCharger() {
+  try { await Promise.all([charger('agenda'), charger('notes')]); heure(); rendre(); }
+  catch (e) { $('#vue').innerHTML = `<div class="carte vide">Impossible de lire le Drive : ${esc(e.message || e)}</div>`; }
+}
+/* Chaque action est appliquée sur la dernière version du fichier : rien n'est jamais écrasé si le PC a modifié entre-temps */
+async function modifier(cle, action) {
+  action(D[cle]); rendre();
+  for (let essai = 0; essai < 3; essai++) {
+    try {
+      const r = await appel('ecrire', cle, JSON.stringify(D[cle], null, 2), MODIF[cle]);
+      if (r.conflit) { D[cle] = JSON.parse(r.json); MODIF[cle] = r.modif; action(D[cle]); continue; }
+      MODIF[cle] = r.modif; heure(); rendre(); return true;
+    } catch (e) { toast('Erreur : ' + (e.message || e)); await toutCharger(); return false; }
+  }
+  toast('Enregistrement impossible, réessaie'); await toutCharger(); return false;
+}
+
+/* ---------- Agenda ---------- */
+const jour = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+let moisVu = new Date(); moisVu.setDate(1);
+let jourSel = jour(new Date());
+function rendreAgenda() {
+  const evs = D.agenda || [], parJour = {};
+  evs.forEach(e => (parJour[e.date] ||= []).push(e));
+  const premier = new Date(moisVu), decal = (premier.getDay() + 6) % 7, debut = new Date(premier); debut.setDate(1 - decal);
+  const auj = jour(new Date());
+  let cases = '';
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(debut); d.setDate(debut.getDate() + i); const k = jour(d);
+    cases += `<button type="button" data-jour="${k}" class="${d.getMonth() !== premier.getMonth() ? 'hors' : ''} ${k === auj ? 'auj' : ''} ${k === jourSel ? 'sel' : ''}">${d.getDate()}${parJour[k] ? '<i></i>' : ''}</button>`;
+  }
+  const duJour = (parJour[jourSel] || []).sort((a, b) => (a.heure || '99').localeCompare(b.heure || '99'));
+  const titreJour = new Date(jourSel + 'T12:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+  const avenir = evs.filter(e => e.date > jourSel).sort((a, b) => (a.date + (a.heure || '')).localeCompare(b.date + (b.heure || ''))).slice(0, 8);
+  const ligne = (e, avecDate) => `<div class="ev"><span class="h">${esc(e.heure || '—')}</span><span class="t">${esc(e.texte)}${avecDate ? `<span class="d"><br>${esc(new Date(e.date + 'T12:00').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' }))}</span>` : ''}</span><button type="button" class="suppr" data-suppr="${esc(e.id)}" aria-label="Supprimer">×</button></div>`;
+  $('#vue').innerHTML = `
+    <div class="carte">
+      <div class="mois"><button type="button" class="ico" data-mois="-1" aria-label="Mois précédent">‹</button>
+        <b>${premier.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}</b>
+        <button type="button" class="ico" data-mois="1" aria-label="Mois suivant">›</button></div>
+      <div class="grille">${['L', 'M', 'M', 'J', 'V', 'S', 'D'].map(j => `<span class="js">${j}</span>`).join('')}${cases}</div>
+    </div>
+    <div class="carte">
+      <div class="titre">${esc(titreJour)}</div>
+      ${duJour.length ? duJour.map(e => ligne(e)).join('') : '<div class="vide">Rien de prévu ce jour-là.</div>'}
+      <form class="ajout" id="formEv"><input type="text" id="evTexte" placeholder="Nouvel événement…" required><input type="time" id="evHeure" aria-label="Heure (facultatif)"><button class="btn">Ajouter</button></form>
+    </div>
+    ${avenir.length ? `<div class="carte"><div class="titre">À venir</div>${avenir.map(e => ligne(e, true)).join('')}</div>` : ''}`;
+}
+
+/* ---------- Notes ---------- */
+let noteOuverte = null, minuteurNote = null, enAttente = null;
+const COULEURS = ['#8b5cf6', '#4f8cff', '#2dd4bf', '#3ed39b', '#f5b54a', '#f2647a', '#6fb0ba'];
+function rendreNotes() {
+  const L = D.notes.listes || [];
+  if (noteOuverte) {
+    const n = L.find(x => x.id === noteOuverte);
+    if (!n) { noteOuverte = null; return rendreNotes(); }
+    if (document.activeElement && document.activeElement.closest && document.activeElement.closest('.editeur')) return;   // ne pas perturber la saisie
+    $('#vue').innerHTML = `<div class="carte editeur">
+      <div class="haut"><button type="button" class="ico" id="retour" aria-label="Retour">‹</button><input type="text" id="noteNom" value="${esc(n.nom)}"><button type="button" class="ico" id="noteSuppr" aria-label="Supprimer la note">🗑</button></div>
+      <div class="couleurs">${COULEURS.map(c => `<button type="button" data-couleur="${c}" style="background:${c}" aria-pressed="${c === n.couleur}" aria-label="Couleur"></button>`).join('')}</div>
+      <textarea id="noteTexte" placeholder="Écris ici…" style="margin-top:10px">${esc(n.texte || '')}</textarea>
+      <div class="etat" id="noteEtat">Enregistrement automatique</div></div>`;
+    return;
+  }
+  $('#vue').innerHTML = `<div class="carte"><div class="titre">Mes notes</div>
+    ${L.length ? L.map(n => `<div class="liste" data-note="${esc(n.id)}"><span class="pt" style="background:${esc(n.couleur || '#6fb0ba')}"></span><span class="n">${esc(n.nom)}<span class="ap">${esc((n.texte || '').split('\n')[0] || 'Vide')}</span></span><span style="color:var(--mut)">›</span></div>`).join('') : '<div class="vide">Aucune note.</div>'}
+    <form class="ajout" id="formNote"><input type="text" id="noteNouv" placeholder="Nouvelle note…" required><button class="btn">Créer</button></form></div>`;
+}
+function enregistrerNote(champ, valeur) {
+  const nid = noteOuverte; $('#noteEtat') && ($('#noteEtat').textContent = 'Enregistrement…');
+  modifier('notes', d => { const n = d.listes.find(x => x.id === nid); if (n) { n[champ] = valeur; n.modif = Date.now(); } })
+    .then(ok => { if (ok && $('#noteEtat')) $('#noteEtat').textContent = 'Enregistré ✓'; });
+}
+
+/* ---------- Affichage et événements ---------- */
+function rendre() {
+  document.querySelectorAll('[data-onglet]').forEach(b => b.setAttribute('aria-pressed', b.dataset.onglet === onglet));
+  if (!D.agenda || !D.notes) return;
+  onglet === 'agenda' ? rendreAgenda() : rendreNotes();
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('button, .liste'); if (!t) return;
+  if (t.dataset.onglet) { onglet = t.dataset.onglet; noteOuverte = null; rendre(); }
+  else if (t.dataset.mois) { moisVu.setMonth(moisVu.getMonth() + +t.dataset.mois); rendre(); }
+  else if (t.dataset.jour) { jourSel = t.dataset.jour; const d = new Date(jourSel + 'T12:00'); if (d.getMonth() !== moisVu.getMonth()) { moisVu = new Date(d); moisVu.setDate(1); } rendre(); }
+  else if (t.dataset.suppr) { const sid = t.dataset.suppr; if (confirm('Supprimer cet événement ?')) modifier('agenda', d => { const i = d.findIndex(x => x.id === sid); if (i >= 0) d.splice(i, 1); }); }
+  else if (t.dataset.note) { noteOuverte = t.dataset.note; rendre(); }
+  else if (t.id === 'retour') { clearTimeout(minuteurNote); if (enAttente) enAttente(); noteOuverte = null; document.activeElement.blur(); rendre(); }
+  else if (t.id === 'noteSuppr') { const nid = noteOuverte; if (confirm('Supprimer cette note ?')) { noteOuverte = null; modifier('notes', d => { d.listes = d.listes.filter(x => x.id !== nid); }); } }
+  else if (t.dataset.couleur) { document.querySelectorAll('[data-couleur]').forEach(b => b.setAttribute('aria-pressed', b === t)); enregistrerNote('couleur', t.dataset.couleur); }
+});
+document.addEventListener('submit', e => {
+  e.preventDefault();
+  if (e.target.id === 'formEv') {
+    const texte = $('#evTexte').value.trim(), h = $('#evHeure').value || null, date = jourSel; if (!texte) return;
+    modifier('agenda', d => d.push({ id: id(), date, heure: h, texte, cree: Date.now() }));
+  } else if (e.target.id === 'formNote') {
+    const nom = $('#noteNouv').value.trim(); if (!nom) return; const nid = id();
+    modifier('notes', d => d.listes.push({ id: nid, nom, couleur: COULEURS[d.listes.length % COULEURS.length], texte: '', cree: Date.now(), modif: Date.now() }));
+    noteOuverte = nid;
+  }
+});
+document.addEventListener('input', e => {
+  if (e.target.id === 'noteTexte' || e.target.id === 'noteNom') {
+    clearTimeout(minuteurNote); $('#noteEtat').textContent = 'Modification…';
+    const champ = e.target.id === 'noteTexte' ? 'texte' : 'nom', v = e.target.value;
+    enAttente = () => { enAttente = null; enregistrerNote(champ, v); };
+    minuteurNote = setTimeout(() => enAttente && enAttente(), 1200);
+  }
+});
+// Rafraîchit en revenant sur l'appli (modifications faites sur le PC entre-temps)
+document.addEventListener('visibilitychange', () => { if (MDP && !document.hidden && !document.querySelector('.editeur textarea:focus')) toutCharger(); });
+setInterval(() => { if (MDP && !document.hidden && !document.querySelector('.editeur textarea:focus, .editeur input:focus')) toutCharger(); }, 60000);
+/* ---------- Mot de passe à l'entrée ---------- */
+let creation = false;
+if (!K) { $('#mdpAide').textContent = 'Lien incomplet : ouvre BOUBOU avec ton lien personnel (celui qui contient #k=…).'; $('#mdp1').hidden = true; $('#mdpBtn').hidden = true; }
+else appelBrut('etat', K).then(r => {
+  creation = !r.configure;
+  $('#mdpAide').textContent = creation ? 'Premier lancement : choisis ton mot de passe (6 caractères minimum).' : 'Entre ton mot de passe.';
+  $('#mdp2').hidden = !creation; $('#mdp2').required = creation;
+  $('#mdpBtn').textContent = creation ? 'Créer' : 'Entrer';
+  $('#mdp1').focus();
+}).catch(e => { $('#mdpAide').textContent = 'Erreur : ' + (e.message || e); });
+$('#formMdp').addEventListener('submit', async e => {
+  e.preventDefault(); e.stopImmediatePropagation();
+  const m = $('#mdp1').value; $('#mdpErr').textContent = '';
+  try {
+    if (creation) {
+      if (m !== $('#mdp2').value) { $('#mdpErr').textContent = 'Les deux mots de passe sont différents'; return; }
+      await appelBrut('definirMdp', K, m);
+    }
+    MDP = m;
+    try { await appelBrut('connexion', K, m); } catch (er) { MDP = ''; throw er; } $('#verrou').remove(); toutCharger();
+  } catch (err) { $('#mdpErr').textContent = err.message || err; $('#mdp1').value = ''; }
+});
+</script>
+</body>
+</html>
