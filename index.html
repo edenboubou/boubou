@@ -7,8 +7,8 @@
 <meta name="robots" content="noindex, nofollow">
 <title>BOUBOU</title>
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="icone.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icone.svg">
+<link rel="icon" href="icone-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icone-180.png">
 <style>
 :root{--bg:#060808;--card:rgba(18,22,21,.92);--soft:rgba(32,38,36,.85);--txt:#eceeea;--mut:#9ea69f;--bd:rgba(190,210,205,.15);--acc:#6fb0ba;--acc2:#3b6670;--ko:#f2647a;--ok:#3ed39b}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -61,6 +61,7 @@ form.ajout input[type=time]{width:110px}
 .verrou{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:24px;background:radial-gradient(120% 60% at 60% 100%,#26302d 0%,#0d1110 55%,#050606 100%)}
 .verrou form{width:100%;max-width:340px;display:grid;gap:12px;text-align:center}
 .verrou h2{margin:0 0 6px;letter-spacing:6px;font-size:28px}
+.verrou .logo{display:block;width:150px;height:150px;margin:0 auto 10px;border-radius:50%;border:2px solid rgba(190,210,205,.35);box-shadow:0 0 0 6px rgba(190,210,205,.06),0 12px 40px rgba(0,0,0,.6)}
 .verrou p{margin:0;color:var(--mut);font-size:14px}
 .verrou input{text-align:center;font-size:20px;letter-spacing:2px}
 .verrou .err{color:var(--ko);min-height:18px}
@@ -81,7 +82,7 @@ form.ajout input[type=time]{width:110px}
 </head>
 <body>
 <div class="verrou" id="verrou"><form id="formMdp" autocomplete="on">
-  <h2>BOUBOU</h2><p id="mdpAide">Chargement…</p>
+  <img class="logo" src="icone-512.png" alt="BOUBOU"><p id="mdpAide">Chargement…</p>
   <input type="password" id="mdp1" placeholder="Mot de passe" autocomplete="current-password" required>
   <input type="password" id="mdp2" placeholder="Confirmer le mot de passe" autocomplete="new-password" hidden>
   <button class="btn" id="mdpBtn">Entrer</button><div class="err" id="mdpErr"></div>
