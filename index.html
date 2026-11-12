@@ -64,6 +64,19 @@ form.ajout input[type=time]{width:110px}
 .verrou p{margin:0;color:var(--mut);font-size:14px}
 .verrou input{text-align:center;font-size:20px;letter-spacing:2px}
 .verrou .err{color:var(--ko);min-height:18px}
+.filtres{display:flex;gap:6px;margin-bottom:10px}
+.filtres button{flex:1;padding:8px;border-radius:10px;border:1px solid var(--bd);background:transparent;color:var(--mut);font-size:13px;font-weight:700}
+.filtres button[aria-pressed=true]{background:var(--soft);color:var(--txt);border-color:var(--acc)}
+.tk{display:flex;align-items:center;gap:10px;padding:10px 2px;border-top:1px solid var(--bd)}
+.tk:first-of-type{border-top:0}
+.tk .case{flex:none;width:26px;height:26px;border-radius:8px;border:2px solid var(--acc);background:transparent;color:#fff;font-size:15px;display:grid;place-items:center;padding:0}
+.tk.fait .case{background:var(--ok);border-color:var(--ok)}
+.tk .t{flex:1;overflow-wrap:anywhere}
+.tk.fait .t{color:var(--mut);text-decoration:line-through}
+.tk .t a{color:var(--acc)}
+.tk .ech{display:block;font-size:12px;color:var(--mut)}
+.tk .ech.retard{color:var(--ko)}
+.lien{border:0;background:none;color:var(--mut);font-size:13px;text-decoration:underline;padding:10px 0 0}
 </style>
 </head>
 <body>
@@ -77,6 +90,7 @@ form.ajout input[type=time]{width:110px}
 <main id="vue"><div class="charge">Chargement…</div></main>
 <nav class="onglets">
   <button type="button" data-onglet="agenda" aria-pressed="true">AGENDA</button>
+  <button type="button" data-onglet="taches" aria-pressed="false">TÂCHES</button>
   <button type="button" data-onglet="notes" aria-pressed="false">NOTES</button>
 </nav>
 <script>
@@ -94,7 +108,7 @@ async function api(a, extra = {}) {
 }
 const appelBrut = (fn, k, m, ...a) => fn === 'etat' ? api('etat') : fn === 'definirMdp' ? api('definir', { m }) : api('connexion', { m });
 const appel = (fn, cle, json, modif) => api(fn, { cle, json, modif });
-const D = { agenda: null, notes: null }, MODIF = { agenda: 0, notes: 0 };
+const D = { agenda: null, notes: null, taches: null }, MODIF = { agenda: 0, notes: 0, taches: 0 };
 let onglet = 'agenda';
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const id = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -106,10 +120,11 @@ async function charger(cle) {
   const r = await appel('lire', cle);
   D[cle] = JSON.parse(r.json || 'null'); MODIF[cle] = r.modif;
   if (cle === 'agenda' && !Array.isArray(D.agenda)) D.agenda = [];
+  if (cle === 'taches' && !Array.isArray(D.taches)) D.taches = [];
   if (cle === 'notes' && (!D.notes || !Array.isArray(D.notes.listes))) D.notes = { listes: [], init: true };
 }
 async function toutCharger() {
-  try { await Promise.all([charger('agenda'), charger('notes')]); heure(); rendre(); }
+  try { await Promise.all([charger('agenda'), charger('notes'), charger('taches')]); heure(); rendre(); }
   catch (e) { $('#vue').innerHTML = `<div class="carte vide">Impossible de lire le Drive : ${esc(e.message || e)}</div>`; }
 }
 /* Chaque action est appliquée sur la dernière version du fichier : rien n'est jamais écrasé si le PC a modifié entre-temps */
@@ -184,11 +199,33 @@ function enregistrerNote(champ, valeur) {
     .then(ok => { if (ok && $('#noteEtat')) $('#noteEtat').textContent = 'Enregistré ✓'; });
 }
 
+/* ---------- Tâches (les mêmes que sur la page d'accueil du PC) ---------- */
+let filtreT = 'afaire';
+const lienifier = s => esc(s).replace(/https?:\/\/[^\s<]+/g, u => `<a href="${u}" target="_blank" rel="noopener">${u}</a>`);
+function rendreTaches() {
+  const tout = D.taches || [], nA = tout.filter(t => !t.fait).length, nF = tout.length - nA;
+  const l = tout.filter(t => filtreT === 'toutes' || (filtreT === 'faites' ? t.fait : !t.fait))
+    .sort((a, b) => (a.fait - b.fait) || String(a.echeance || '9999').localeCompare(String(b.echeance || '9999')) || (a.cree || 0) - (b.cree || 0));
+  const auj = jour(new Date());
+  const ech = t => t.echeance ? `<span class="ech${!t.fait && t.echeance < auj ? ' retard' : ''}">échéance : ${esc(new Date(String(t.echeance).slice(0, 10) + 'T12:00').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' }))}</span>` : '';
+  $('#vue').innerHTML = `<div class="carte"><div class="titre">Mes tâches</div>
+    <div class="filtres">
+      <button type="button" data-tfiltre="afaire" aria-pressed="${filtreT === 'afaire'}">À faire (${nA})</button>
+      <button type="button" data-tfiltre="faites" aria-pressed="${filtreT === 'faites'}">Faites (${nF})</button>
+      <button type="button" data-tfiltre="toutes" aria-pressed="${filtreT === 'toutes'}">Toutes</button>
+    </div>
+    ${l.length ? l.map(t => `<div class="tk${t.fait ? ' fait' : ''}"><button type="button" class="case" data-tfait="${esc(t.id)}" aria-label="${t.fait ? 'Marquer à faire' : 'Marquer comme faite'}">${t.fait ? '✓' : ''}</button><span class="t">${lienifier(t.texte)}${ech(t)}</span><button type="button" class="suppr" data-tdel="${esc(t.id)}" aria-label="Supprimer">×</button></div>`).join('')
+      : `<div class="vide">${filtreT === 'faites' ? 'Aucune tâche terminée.' : 'Aucune tâche.'}</div>`}
+    <form class="ajout" id="formTache"><input type="text" id="tTexte" placeholder="Nouvelle tâche…" required><button class="btn">Ajouter</button></form>
+    ${nF ? `<button type="button" class="lien" id="effacerFaites">Effacer les ${nF} tâche${nF > 1 ? 's' : ''} terminée${nF > 1 ? 's' : ''}</button>` : ''}
+  </div>`;
+}
+
 /* ---------- Affichage et événements ---------- */
 function rendre() {
   document.querySelectorAll('[data-onglet]').forEach(b => b.setAttribute('aria-pressed', b.dataset.onglet === onglet));
-  if (!D.agenda || !D.notes) return;
-  onglet === 'agenda' ? rendreAgenda() : rendreNotes();
+  if (!D.agenda || !D.notes || !D.taches) return;
+  onglet === 'agenda' ? rendreAgenda() : onglet === 'taches' ? rendreTaches() : rendreNotes();
 }
 document.addEventListener('click', e => {
   const t = e.target.closest('button, .liste'); if (!t) return;
@@ -199,6 +236,10 @@ document.addEventListener('click', e => {
   else if (t.dataset.note) { noteOuverte = t.dataset.note; rendre(); }
   else if (t.id === 'retour') { clearTimeout(minuteurNote); if (enAttente) enAttente(); noteOuverte = null; document.activeElement.blur(); rendre(); }
   else if (t.id === 'noteSuppr') { const nid = noteOuverte; if (confirm('Supprimer cette note ?')) { noteOuverte = null; modifier('notes', d => { d.listes = d.listes.filter(x => x.id !== nid); }); } }
+  else if (t.dataset.tfiltre) { filtreT = t.dataset.tfiltre; rendre(); }
+  else if (t.dataset.tfait) { const tid = t.dataset.tfait; modifier('taches', d => { const x = d.find(y => y.id === tid); if (x) { x.fait = !x.fait; x.faitLe = x.fait ? Date.now() : null; } }); }
+  else if (t.dataset.tdel) { const tid = t.dataset.tdel; if (confirm('Supprimer cette tâche ?')) modifier('taches', d => { const i = d.findIndex(y => y.id === tid); if (i >= 0) d.splice(i, 1); }); }
+  else if (t.id === 'effacerFaites') { if (confirm('Effacer toutes les tâches terminées ?')) modifier('taches', d => { for (let i = d.length - 1; i >= 0; i--) if (d[i].fait) d.splice(i, 1); }); }
   else if (t.dataset.couleur) { document.querySelectorAll('[data-couleur]').forEach(b => b.setAttribute('aria-pressed', b === t)); enregistrerNote('couleur', t.dataset.couleur); }
 });
 document.addEventListener('submit', e => {
@@ -206,6 +247,9 @@ document.addEventListener('submit', e => {
   if (e.target.id === 'formEv') {
     const texte = $('#evTexte').value.trim(), h = $('#evHeure').value || null, date = jourSel; if (!texte) return;
     modifier('agenda', d => d.push({ id: id(), date, heure: h, texte, cree: Date.now() }));
+  } else if (e.target.id === 'formTache') {
+    const texte = $('#tTexte').value.trim(); if (!texte) return;
+    modifier('taches', d => d.push({ id: id(), texte, fait: false, cree: Date.now() }));
   } else if (e.target.id === 'formNote') {
     const nom = $('#noteNouv').value.trim(); if (!nom) return; const nid = id();
     modifier('notes', d => d.listes.push({ id: nid, nom, couleur: COULEURS[d.listes.length % COULEURS.length], texte: '', cree: Date.now(), modif: Date.now() }));
