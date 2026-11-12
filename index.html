@@ -277,6 +277,11 @@ else appelBrut('etat', K).then(r => {
   $('#mdpBtn').textContent = creation ? 'Créer' : 'Entrer';
   $('#mdp1').focus();
 }).catch(e => { $('#mdpAide').textContent = 'Erreur : ' + (e.message || e); });
+  // Connexion automatique dès que 8 caractères sont saisis (comme si on appuyait sur Entrée)
+['#mdp1', '#mdp2'].forEach(s => $(s).addEventListener('input', e => {
+  const champ = creation ? $('#mdp2') : $('#mdp1');
+  if (e.target === champ && champ.value.length === 8) $('#formMdp').requestSubmit();
+}));
 $('#formMdp').addEventListener('submit', async e => {
   e.preventDefault(); e.stopImmediatePropagation();
   const m = $('#mdp1').value; $('#mdpErr').textContent = '';
